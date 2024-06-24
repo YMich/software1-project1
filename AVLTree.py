@@ -32,8 +32,9 @@ class AVLNode(object):
 	@returns: False if self is a virtual node, True otherwise.
 	"""
 	def is_real_node(self):
-		return False
-
+		if self.key is None and self.value is None:
+			return False
+		return True
 
 
 """
@@ -49,7 +50,6 @@ class AVLTree(object):
 	def __init__(self):
 		self.root = None
 
-
 	"""searches for a node in the dictionary corresponding to the key
 
 	@type key: int
@@ -58,6 +58,16 @@ class AVLTree(object):
 	@returns: node corresponding to key
 	"""
 	def search(self, key):
+		curr_node = self.root
+
+		while curr_node.is_real_node():
+			if curr_node.key == key:
+				return curr_node
+			elif curr_node.key < key:
+				curr_node = curr_node.right
+			else:
+				curr_node = curr_node.left
+
 		return None
 
 
@@ -72,7 +82,91 @@ class AVLTree(object):
 	@returns: the number of rebalancing operation due to AVL rebalancing
 	"""
 	def insert(self, key, val):
-		return -1
+		node = self.regularInsertion(key, val)
+		self.size += 1
+
+		#TODO:	Inserted node is a leaf
+		# 		Inserted node has one child
+		#		Inserted node has two children
+		# 		NEED TO CHANGE PARENT HEIGHT + SIZE
+		#		NEED TO CHANGE NEW NODE HEIGHT + SIZE
+
+		while node is not None:
+			balance_factor = node.left.size - node.right.size
+
+			# |BF|<2 and parent's height has not changed
+			if abs(balance_factor) < 2 and (node.height == max(node.left.height, node.right.height)+1):
+				break;
+
+			elif abs(balance_factor) < 2 and (node.height != max(node.left.height, node.right.height)+1):
+				node = node.parent
+
+			elif abs(balance_factor) == 2:
+				#TODO: CHECK WICH OF ROTATIONS THEN APPLY
+				pass
+
+	def left_rotate(self, criminal):
+		node_A = criminal.right
+		criminal.right = node_A.left
+		criminal.right.parent = criminal
+		node_A.left = criminal
+		node_A.parent = criminal.parent
+
+		if node_A.parent.left is node_A:
+			node_A.parent.left = node_A
+		else:
+			node_A.parent.right = node_A
+			
+		criminal.parent = node_A
+
+	def right_rotate(self, criminal):
+		node_A = criminal.left
+		criminal.left = node_A.right
+		criminal.left.parent = criminal
+		node_A.right = criminal
+		node_A.parent = criminal.parent
+
+		if node_A.parent.left is node_A:
+			node_A.parent.left = node_A
+		else:
+			node_A.parent.right = node_A
+
+		criminal.parent = node_A
+
+	"""
+		inserts a new node into the dictionary with corresponding key and value
+		
+		@type key: int
+		@pre: key currently does not appear in the dictionary
+		@param key: key of item that is to be inserted to self
+		@type val: string
+		@param val: the value of the item
+		@rtype: int
+		@returns: the parent of the inserted node
+	"""
+	def regularInsertion(self, key, val):
+		parent = None
+		curr_node = self.root
+		new_node = AVLNode(key, val)
+		new_node.height = 0
+		new_node.size = 1
+
+		while curr_node.is_real_node():
+			parent = curr_node
+			if curr_node.key < key:
+				curr_node = curr_node.right
+			else:
+				curr_node = curr_node.left
+
+		# Tree was empty
+		if parent is None:
+			self.root = new_node
+		if parent.key < new_node.key:
+			parent.right = new_node
+		else:
+			parent.left = new_node
+
+		return parent
 
 
 	"""deletes node from the dictionary
@@ -101,7 +195,7 @@ class AVLTree(object):
 	@returns: the number of items in dictionary 
 	"""
 	def size(self):
-		return -1	
+		return self.root.left.size + self.root.right.size + 1
 
 
 	"""compute the rank of node in the dictionary
@@ -148,4 +242,11 @@ class AVLTree(object):
 	@returns: the root, None if the dictionary is empty
 	"""
 	def get_root(self):
-		return None
+		return self.root if self.root.is_real_node() else None
+
+def main():
+	node = AVLNode(1, "hello")
+	print(node.is_real_node())
+
+if __name__ == "__main__":
+	main()
