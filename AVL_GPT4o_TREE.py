@@ -32,9 +32,7 @@ class AVLNode(object):
     """
 
     def is_real_node(self):
-        if self.key is None and self.value is None:
-            return False
-        return True
+        return self is not AVLTree.NONE_NODE
 
 
 """
@@ -179,7 +177,7 @@ class AVLTree(object):
         parent = AVLTree.NONE_NODE
         curr_node = self.root
         new_node = AVLNode(key, val)
-        new_node.height = 1
+        new_node.height = 0
 
         new_node.left = AVLTree.NONE_NODE
         new_node.right = AVLTree.NONE_NODE
@@ -285,7 +283,7 @@ def print_space(n, removed):
     if removed is None:
         print(" ", end="")
     else:
-        print(removed.key, end="")
+        print("K:"+str(removed.key)+"\tH:"+str(removed.height), end="")
 
 def print_binary_tree(root):
     tree_level = []
