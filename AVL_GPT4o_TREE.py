@@ -202,22 +202,6 @@ class AVLTree(object):
 
         return parent
 
-    def print_tree(self):
-        levels = []
-        self._collect_levels(self.root, 0, levels)
-        for i, level in enumerate(levels):
-            print(f"Level {i}: " + " ".join(str(node.key) for node in level))
-
-    def _collect_levels(self, node, level, levels):
-        if node is AVLTree.NONE_NODE:
-            return
-        if len(levels) == level:
-            levels.append([])
-        levels[level].append(node)
-        self._collect_levels(node.left, level + 1, levels)
-        self._collect_levels(node.right, level + 1, levels)
-
-
     """deletes node from the dictionary
 
     @type node: AVLNode
@@ -295,13 +279,48 @@ class AVLTree(object):
         return self.root if self.root.is_real_node() else None
 
 
+def print_space(n, removed):
+    for i in range(n):
+        print("\t", end="")
+    if removed is None:
+        print(" ", end="")
+    else:
+        print(removed.key, end="")
+
+def print_binary_tree(root):
+    tree_level = []
+    temp = []
+    tree_level.append(root)
+    counter = 0
+    height = root.height
+    number_of_elements = 2 ** (height + 1) - 1
+    while counter <= height:
+        removed = tree_level.pop(0)
+        if len(temp) == 0:
+            print_space(int(number_of_elements /
+                            (2 ** (counter + 1))), removed)
+        else:
+            print_space(int(number_of_elements / (2 ** counter)), removed)
+        if removed is None:
+            temp.append(None)
+            temp.append(None)
+        else:
+            temp.append(removed.left)
+            temp.append(removed.right)
+        if len(tree_level) == 0:
+            print("\n")
+            tree_level = temp
+            temp = []
+            counter += 1
 def main():
     myTree = AVLTree()
     myTree.insert(5, '1')
     myTree.insert(2, '1')
     myTree.insert(3, '1')
-    myTree.print_tree()
+    myTree.insert(1, '1')
+    myTree.insert(0, '1')
 
+    print_binary_tree(myTree.root)
 
 if __name__ == "__main__":
     main()
