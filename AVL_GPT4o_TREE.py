@@ -98,7 +98,7 @@ class AVLTree(object):
                 rotation_counter += 1
 
             elif parent_bf == -2:
-                son_bf = parent_node.left.left.height - parent_node.left.right.height
+                son_bf = parent_node.right.left.height - parent_node.right.right.height
                 if son_bf == 1:
                     self.right_rotate(parent_node.right)
                     rotation_counter += 1
@@ -189,7 +189,7 @@ class AVLTree(object):
 
     def delete(self, node):
         parent = self.regular_deletion(node)
-        self.balance_tree(parent)
+        return self.balance_tree(parent)
 
     def regular_deletion(self, node):
         if not node.left.is_real_node() and not node.right.is_real_node():
@@ -272,7 +272,18 @@ class AVLTree(object):
     @returns: the rank of node in self
     """
     def rank(self, node):
-        return -1
+
+        rank = node.left.size + 1
+
+        while node.parent.is_real_node():
+            if node.parent.right is node:
+                rank += node.parent.left.size + 1
+            node = node.parent
+
+        return rank
+
+
+
 
     """finds the i'th smallest item (according to keys) in the dictionary
 
@@ -284,7 +295,20 @@ class AVLTree(object):
     """
 
     def select(self, i):
-        return None
+        curr = self.root
+
+        while curr.is_real_node():
+
+            if curr.left.size + 1 == i:
+                return curr
+
+            elif i <= curr.left.size:
+                curr = curr.left
+
+            else:
+                i -= (curr.left.size + 1)
+                curr = curr.right
+
     """finds the node with the largest value in a specified range of keys
 
     @type a: int
@@ -344,20 +368,16 @@ def print_binary_tree(root):
             counter += 1
 def main():
     myTree = AVLTree()
-    myTree.insert(5, '1')
-    myTree.insert(2, '1')
     myTree.insert(3, '1')
-    myTree.insert(1, '1')
-    myTree.insert(4, '1')
-    myTree.insert(14, '1')
+    myTree.insert(185, '1')
     myTree.insert(8, '1')
-    myTree.insert(100, '1')
-    myTree.insert(45, '1')
+    myTree.insert(12, '1')
     myTree.insert(21, '1')
+    myTree.insert(14, '1')
+
 
     print_binary_tree(myTree.root)
     print("\n\n\n\n\n")
-    myTree.delete(myTree.search(3))
     print_binary_tree(myTree.root)
 
 if __name__ == "__main__":
