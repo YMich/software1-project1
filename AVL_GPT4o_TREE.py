@@ -79,8 +79,9 @@ class AVLTree(object):
 
     def insert(self, key, val):
         parent_node = self.regular_insertion(key, val)
-        self.balance_tree(parent_node)
+        return self.balance_tree(parent_node)
     def balance_tree(self, parent_node):
+        rotation_counter = 0
 
         while parent_node.is_real_node():
             parent_node.height = 1 + max(parent_node.left.height, parent_node.right.height)
@@ -92,15 +93,21 @@ class AVLTree(object):
 
                 if son_bf == -1:
                     self.left_rotate(parent_node.left)
+                    rotation_counter += 1
                 self.right_rotate(parent_node)
+                rotation_counter += 1
 
             elif parent_bf == -2:
                 son_bf = parent_node.left.left.height - parent_node.left.right.height
                 if son_bf == 1:
                     self.right_rotate(parent_node.right)
+                    rotation_counter += 1
                 self.left_rotate(parent_node)
+                rotation_counter += 1
 
             parent_node = parent_node.parent
+
+        return rotation_counter
     def left_rotate(self, criminal):
         node_A = criminal.right
         criminal.right = node_A.left
@@ -180,16 +187,56 @@ class AVLTree(object):
     @returns: the number of rebalancing operation due to AVL rebalancing
     """
     def delete(self, node):
-        return -1
+        parent = node.parent
+        self.regular_deletion(node)
+
+
+    def regular_deletion(self, node):
+
+        if not node.left.is_real_node() and not node.right.is_real_node():
+            if node.parent.left is node:
+                node.parent.left = AVLTree.NONE_NODE
+            else:
+                node.parent.right = AVLTree.NONE_NODE
+
+        elif node.left.is_real_node() and node.right.is_real_node():
+            pass
+
+        elif node.left.is_real_node():
+            if node.parent.left is node:
+                node.parent.left = node.left
+                node.left.parent = node.parent
+            else:
+                node.parent.right = node.left
+                node.left.parent = node.parent
+
+        elif node.right.is_real_node():
+            if node.parent.left is node:
+                node.parent.left = node.right
+                node.right.parent = node.parent
+            else:
+                node.parent.right = node.right
+                node.right.parent = node.parent
+
 
     """returns an array representing dictionary 
 
     @rtype: list
     @returns: a sorted list according to key of touples (key, value) representing the data structure
     """
-
     def avl_to_array(self):
-        return None
+        arr = []
+        def rec_inoreder_traversal(root, arr):
+            if not root.is_real_node():
+                return
+
+            rec_inoreder_traversal(root.left, arr)
+            arr.append(root)
+            rec_inoreder_traversal(root.right, arr)
+
+        rec_inoreder_traversal(self.root, arr)
+
+        return arr
 
     """returns the number of items in dictionary 
 
@@ -208,7 +255,6 @@ class AVLTree(object):
     @rtype: int
     @returns: the rank of node in self
     """
-
     def rank(self, node):
         return -1
 
@@ -223,7 +269,6 @@ class AVLTree(object):
 
     def select(self, i):
         return None
-
     """finds the node with the largest value in a specified range of keys
 
     @type a: int
