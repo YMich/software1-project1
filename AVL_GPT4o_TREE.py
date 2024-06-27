@@ -186,38 +186,54 @@ class AVLTree(object):
     @rtype: int
     @returns: the number of rebalancing operation due to AVL rebalancing
     """
-    def delete(self, node):
-        parent = node.parent
-        self.regular_deletion(node)
 
+    def delete(self, node):
+        parent = self.regular_deletion(node)
+        self.balance_tree(parent)
 
     def regular_deletion(self, node):
-
         if not node.left.is_real_node() and not node.right.is_real_node():
-            if node.parent.left is node:
-                node.parent.left = AVLTree.NONE_NODE
-            else:
-                node.parent.right = AVLTree.NONE_NODE
+            self.replace_node(node, AVLTree.NONE_NODE)
 
         elif node.left.is_real_node() and node.right.is_real_node():
-            pass
+            node_successor = self.get_successor(node)
+            self.replace_node_with_successor(node, node_successor)
+            return node_successor
 
         elif node.left.is_real_node():
-            if node.parent.left is node:
-                node.parent.left = node.left
-                node.left.parent = node.parent
-            else:
-                node.parent.right = node.left
-                node.left.parent = node.parent
+            self.replace_node(node, node.left)
 
         elif node.right.is_real_node():
-            if node.parent.left is node:
-                node.parent.left = node.right
-                node.right.parent = node.parent
-            else:
-                node.parent.right = node.right
-                node.right.parent = node.parent
+            self.replace_node(node, node.right)
 
+        return node.parent
+    def replace_node(self, node, new_node):
+        if node.parent.is_real_node():
+            if node.parent.left is node:
+                node.parent.left = new_node
+            else:
+                node.parent.right = new_node
+        else:
+            self.root = new_node
+        new_node.parent = node.parent
+    def replace_node_with_successor(self, node, successor):
+        if successor.parent is not node:
+            self.replace_node(successor, successor.right)
+            successor.right = node.right
+            successor.right.parent = successor
+        self.replace_node(node, successor)
+        successor.left = node.left
+        successor.left.parent = successor
+    def get_successor(self, node):
+        if node.right.is_real_node():
+            node = node.right
+            while node.left.is_real_node():
+                node = node.left
+            return node
+        else:
+            while node.parent.left is not node:
+                node = node.parent
+            return node.parent
 
     """returns an array representing dictionary 
 
@@ -295,7 +311,7 @@ class AVLTree(object):
 
 def print_space(n, removed):
     for i in range(n):
-        print("\t\t\t", end="")
+        print("\t", end="")
     if removed is None:
         print(" ", end="")
     else:
@@ -333,7 +349,15 @@ def main():
     myTree.insert(3, '1')
     myTree.insert(1, '1')
     myTree.insert(4, '1')
+    myTree.insert(14, '1')
+    myTree.insert(8, '1')
+    myTree.insert(100, '1')
+    myTree.insert(45, '1')
+    myTree.insert(21, '1')
 
+    print_binary_tree(myTree.root)
+    print("\n\n\n\n\n")
+    myTree.delete(myTree.search(3))
     print_binary_tree(myTree.root)
 
 if __name__ == "__main__":
