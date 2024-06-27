@@ -5,8 +5,6 @@
 # name2    - complete info
 
 """A class represnting a node in an AVL tree"""
-
-
 class AVLNode(object):
     """Constructor, you are allowed to add more fields.
 
@@ -38,12 +36,9 @@ class AVLNode(object):
 """
 A class implementing an AVL tree.
 """
-
-
 class AVLTree(object):
     """
     Constructor, you are allowed to add more fields.
-
     """
     NONE_NODE = AVLNode(None, None)
 
@@ -85,47 +80,31 @@ class AVLTree(object):
     def insert(self, key, val):
         parent_node = self.regular_insertion(key, val)
         self.balance_tree(parent_node)
-
     def balance_tree(self, parent_node):
-        while parent_node.is_real_node():
-            old_parent_height = parent_node.height
-            parent_node.height = 1 + max(
-                parent_node.left.height if parent_node.left.is_real_node() else 0,
-                parent_node.right.height if parent_node.right.is_real_node() else 0
-            )
-            parent_bf = (
-                    (parent_node.left.height if parent_node.left.is_real_node() else 0) -
-                    (parent_node.right.height if parent_node.right.is_real_node() else 0)
-            )
 
-            if abs(parent_bf) < 2 and (old_parent_height == parent_node.height):
-                break
-            elif abs(parent_bf) < 2 and (old_parent_height != parent_node.height):
-                parent_node = parent_node.parent
-            elif parent_bf == 2:
-                son_bf = (
-                        (parent_node.left.left.height if parent_node.left.left.is_real_node() else 0) -
-                        (parent_node.left.right.height if parent_node.left.right.is_real_node() else 0)
-                )
+        while parent_node.is_real_node():
+            parent_node.height = 1 + max(parent_node.left.height, parent_node.right.height)
+            parent_node.size = 1 + parent_node.left.size + parent_node.right.size
+            parent_bf = (parent_node.left.height - parent_node.right.height)
+
+            if parent_bf == 2:
+                son_bf = parent_node.left.left.height - parent_node.left.right.height
+
                 if son_bf == -1:
                     self.left_rotate(parent_node.left)
                 self.right_rotate(parent_node)
-                break
+
             elif parent_bf == -2:
-                son_bf = (
-                        (parent_node.right.left.height if parent_node.right.left.is_real_node() else 0) -
-                        (parent_node.right.right.height if parent_node.right.right.is_real_node() else 0)
-                )
+                son_bf = parent_node.left.left.height - parent_node.left.right.height
                 if son_bf == 1:
                     self.right_rotate(parent_node.right)
                 self.left_rotate(parent_node)
-                break
 
+            parent_node = parent_node.parent
     def left_rotate(self, criminal):
         node_A = criminal.right
         criminal.right = node_A.left
-        if node_A.left.is_real_node():
-            node_A.left.parent = criminal
+        node_A.left.parent = criminal
         node_A.left = criminal
         node_A.parent = criminal.parent
 
@@ -138,20 +117,15 @@ class AVLTree(object):
 
         criminal.parent = node_A
 
-        criminal.height = 1 + max(
-            criminal.left.height if criminal.left.is_real_node() else 0,
-            criminal.right.height if criminal.right.is_real_node() else 0
-        )
-        node_A.height = 1 + max(
-            node_A.left.height if node_A.left.is_real_node() else 0,
-            node_A.right.height if node_A.right.is_real_node() else 0
-        )
+        criminal.height = 1 + max(criminal.left.height, criminal.right.height)
+        node_A.height = 1 + max(node_A.left.height, node_A.right.height)
 
+        node_A.size = criminal.size
+        criminal.size = criminal.left.size + criminal.right.size + 1
     def right_rotate(self, criminal):
         node_A = criminal.left
         criminal.left = node_A.right
-        if node_A.right.is_real_node():
-            node_A.right.parent = criminal
+        node_A.right.parent = criminal
         node_A.right = criminal
         node_A.parent = criminal.parent
 
@@ -164,21 +138,18 @@ class AVLTree(object):
 
         criminal.parent = node_A
 
-        criminal.height = 1 + max(
-            criminal.left.height if criminal.left.is_real_node() else 0,
-            criminal.right.height if criminal.right.is_real_node() else 0
-        )
-        node_A.height = 1 + max(
-            node_A.left.height if node_A.left.is_real_node() else 0,
-            node_A.right.height if node_A.right.is_real_node() else 0
-        )
+        criminal.height = 1 + max(criminal.left.height, criminal.right.height)
+        node_A.height = 1 + max(node_A.left.height, node_A.right.height)
 
+        node_A.size = criminal.size
+        criminal.size = criminal.left.size + criminal.right.size + 1
     def regular_insertion(self, key, val):
         parent = AVLTree.NONE_NODE
         curr_node = self.root
+
         new_node = AVLNode(key, val)
         new_node.height = 0
-
+        new_node.size = 1
         new_node.left = AVLTree.NONE_NODE
         new_node.right = AVLTree.NONE_NODE
 
@@ -200,6 +171,7 @@ class AVLTree(object):
 
         return parent
 
+
     """deletes node from the dictionary
 
     @type node: AVLNode
@@ -207,7 +179,6 @@ class AVLTree(object):
     @rtype: int
     @returns: the number of rebalancing operation due to AVL rebalancing
     """
-
     def delete(self, node):
         return -1
 
@@ -279,18 +250,18 @@ class AVLTree(object):
 
 def print_space(n, removed):
     for i in range(n):
-        print("\t", end="")
+        print("\t\t\t", end="")
     if removed is None:
         print(" ", end="")
     else:
-        print("K:"+str(removed.key)+"\tH:"+str(removed.height), end="")
+        print("K:"+str(removed.key)+" "+"H:"+str(removed.height)+" "+"S:"+str(removed.size), end="")
 
 def print_binary_tree(root):
     tree_level = []
     temp = []
     tree_level.append(root)
     counter = 0
-    height = root.height
+    height = root.height + 1
     number_of_elements = 2 ** (height + 1) - 1
     while counter <= height:
         removed = tree_level.pop(0)
@@ -316,7 +287,7 @@ def main():
     myTree.insert(2, '1')
     myTree.insert(3, '1')
     myTree.insert(1, '1')
-    myTree.insert(0, '1')
+    myTree.insert(4, '1')
 
     print_binary_tree(myTree.root)
 
