@@ -354,7 +354,7 @@ class AVLTree(object):
     @pre: node is in self
     @param node: a node in the dictionary to compute the rank for
     @rtype: int
-    @returns: the rank of node in self
+    @returns: the rank of node
     @complexity: O(log n)
     """
     def rank(self, node):
@@ -373,7 +373,7 @@ class AVLTree(object):
     @pre: 1 <= i <= self.size()
     @param i: the rank to be selected in self
     @rtype: AVLNode
-    @returns: the node of rank i in self
+    @returns: the node of rank i
     @complexity: O(log n)
     """
     def select(self, i):
@@ -436,7 +436,7 @@ class AVLTree(object):
     @complexity: O(1)
     """
     def get_root(self):
-        return self.root if self.root.is_real_node() else None
+        return self.root
 
 
 def print_space(n, removed):
@@ -491,15 +491,15 @@ def print_binary_tree(root):
 
 
 def main():
-    myTree = AVLTree()
-    myTree.insert(3, 'a')
-    myTree.insert(185, 'zb')
-    myTree.insert(8, 'c')
-    myTree.insert(12, 'd')
-    myTree.insert(21, 'e')
-    myTree.insert(14, 'f')
-    print(myTree.max_range(0, 200).key)
-
+    # myTree = AVLTree()
+    # print(myTree.get_root())
+    # myTree.insert(3, 'a')
+    # myTree.insert(185, 'zb')
+    # myTree.insert(8, 'c')
+    # myTree.insert(12, 'd')
+    # myTree.insert(21, 'e')
+    # myTree.insert(14, 'f')
+    # print(myTree.max_range(0, 200).key)
     # print(myTree.avl_to_array())
     # print("\n\n\n\n\n")
     # print_binary_tree(myTree.root)
