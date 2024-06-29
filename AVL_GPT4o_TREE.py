@@ -4,7 +4,7 @@
 # id2      - complete info
 # name2    - complete info
 
-"""A class represnting a node in an AVL tree"""
+"""A class representing a node in an AVL tree"""
 class AVLNode(object):
     """Constructor, you are allowed to add more fields.
 
@@ -27,8 +27,8 @@ class AVLNode(object):
 
     @rtype: bool
     @returns: False if self is a virtual node, True otherwise.
+    @complexity: O(1)
     """
-
     def is_real_node(self):
         return self is not AVLTree.NONE_NODE
 
@@ -40,7 +40,7 @@ class AVLTree(object):
     """
     Constructor, you are allowed to add more fields.
     """
-    NONE_NODE = AVLNode(None, None)
+    NONE_NODE = AVLNode(None, "")
 
     def __init__(self):
         self.root = AVLTree.NONE_NODE
@@ -51,8 +51,8 @@ class AVLTree(object):
     @param key: a key to be searched
     @rtype: AVLNode
     @returns: node corresponding to key
+    @complexity: O(log n)
     """
-
     def search(self, key):
         curr_node = self.root
 
@@ -75,12 +75,23 @@ class AVLTree(object):
     @param val: the value of the item
     @rtype: int
     @returns: the number of rebalancing operation due to AVL rebalancing
+    @complexity: O(log n)
     """
-
     def insert(self, key, val):
         parent_node = self.regular_insertion(key, val)
         return self.balance_tree(parent_node)
+
+    """
+    Balances the AVL tree after insertion or deletion.
+
+    @type parent_node: AVLNode
+    @param parent_node: The parent node to start balancing from
+    @rtype: int
+    @returns: the number of rebalancing operations performed
+    @complexity: O(log n)
+    """
     def balance_tree(self, parent_node):
+
         rotation_counter = 0
 
         while parent_node.is_real_node():
@@ -108,7 +119,16 @@ class AVLTree(object):
             parent_node = parent_node.parent
 
         return rotation_counter
+
+    """
+    Performs a left rotation on the AVL tree.
+
+    @type criminal: AVLNode
+    @param criminal: The node to rotate
+    @complexity: O(1)
+    """
     def left_rotate(self, criminal):
+
         node_A = criminal.right
         criminal.right = node_A.left
         node_A.left.parent = criminal
@@ -129,7 +149,16 @@ class AVLTree(object):
 
         node_A.size = criminal.size
         criminal.size = criminal.left.size + criminal.right.size + 1
+
+    """
+    Performs a right rotation on the AVL tree.
+
+    @type criminal: AVLNode
+    @param criminal: The node to rotate
+    @complexity: O(1)
+    """
     def right_rotate(self, criminal):
+
         node_A = criminal.left
         criminal.left = node_A.right
         node_A.right.parent = criminal
@@ -150,7 +179,20 @@ class AVLTree(object):
 
         node_A.size = criminal.size
         criminal.size = criminal.left.size + criminal.right.size + 1
+
+    """
+    Regular insertion method for inserting a node into the AVL tree.
+
+    @type key: int
+    @param key: The key of the node to be inserted
+    @type val: string
+    @param val: The value of the node to be inserted
+    @rtype: AVLNode
+    @returns: The parent node where the new node was inserted
+    @complexity: O(log n)
+    """
     def regular_insertion(self, key, val):
+
         parent = AVLTree.NONE_NODE
         curr_node = self.root
 
@@ -178,20 +220,29 @@ class AVLTree(object):
 
         return parent
 
-
     """deletes node from the dictionary
 
     @type node: AVLNode
     @pre: node is a real pointer to a node in self
     @rtype: int
     @returns: the number of rebalancing operation due to AVL rebalancing
+    @complexity: O(log n)
     """
-
     def delete(self, node):
         parent = self.regular_deletion(node)
         return self.balance_tree(parent)
 
+    """
+    Regular deletion method for deleting a node from the AVL tree.
+
+    @type node: AVLNode
+    @param node: The node to be deleted
+    @rtype: AVLNode
+    @returns: The parent node of the deleted node
+    @complexity: O(log n)
+    """
     def regular_deletion(self, node):
+
         if not node.left.is_real_node() and not node.right.is_real_node():
             self.replace_node(node, AVLTree.NONE_NODE)
 
@@ -207,7 +258,18 @@ class AVLTree(object):
             self.replace_node(node, node.right)
 
         return node.parent
+
+    """
+    Replaces a node in the AVL tree with a new node.
+
+    @type node: AVLNode
+    @param node: The node to be replaced
+    @type new_node: AVLNode
+    @param new_node: The new node to replace with
+    @complexity: O(1)
+    """
     def replace_node(self, node, new_node):
+
         if node.parent.is_real_node():
             if node.parent.left is node:
                 node.parent.left = new_node
@@ -216,7 +278,18 @@ class AVLTree(object):
         else:
             self.root = new_node
         new_node.parent = node.parent
+
+    """
+    Replaces a node in the AVL tree with its successor.
+
+    @type node: AVLNode
+    @param node: The node to be replaced
+    @type successor: AVLNode
+    @param successor: The successor node to replace with
+    @complexity: O(1)
+    """
     def replace_node_with_successor(self, node, successor):
+
         if successor.parent is not node:
             self.replace_node(successor, successor.right)
             successor.right = node.right
@@ -224,7 +297,18 @@ class AVLTree(object):
         self.replace_node(node, successor)
         successor.left = node.left
         successor.left.parent = successor
+
+    """
+    Finds the successor of a given node in the AVL tree.
+
+    @type node: AVLNode
+    @param node: The node to find the successor for
+    @rtype: AVLNode
+    @returns: The successor node
+    @complexity: O(log n)
+    """
     def get_successor(self, node):
+
         if node.right.is_real_node():
             node = node.right
             while node.left.is_real_node():
@@ -238,19 +322,20 @@ class AVLTree(object):
     """returns an array representing dictionary 
 
     @rtype: list
-    @returns: a sorted list according to key of touples (key, value) representing the data structure
+    @returns: a sorted list according to key of tuples (key, value) representing the data structure
+    @complexity: O(n)
     """
     def avl_to_array(self):
         arr = []
-        def rec_inoreder_traversal(root, arr):
+        def rec_inorder_traversal(root, arr):
             if not root.is_real_node():
                 return
 
-            rec_inoreder_traversal(root.left, arr)
-            arr.append(root)
-            rec_inoreder_traversal(root.right, arr)
+            rec_inorder_traversal(root.left, arr)
+            arr.append((root.key, root.value))
+            rec_inorder_traversal(root.right, arr)
 
-        rec_inoreder_traversal(self.root, arr)
+        rec_inorder_traversal(self.root, arr)
 
         return arr
 
@@ -258,10 +343,10 @@ class AVLTree(object):
 
     @rtype: int
     @returns: the number of items in dictionary 
+    @complexity: O(1)
     """
-
     def size(self):
-        return self.root.left.size + self.root.right.size + 1
+        return self.root.size
 
     """compute the rank of node in the dictionary
 
@@ -270,9 +355,9 @@ class AVLTree(object):
     @param node: a node in the dictionary to compute the rank for
     @rtype: int
     @returns: the rank of node in self
+    @complexity: O(log n)
     """
     def rank(self, node):
-
         rank = node.left.size + 1
 
         while node.parent.is_real_node():
@@ -282,9 +367,6 @@ class AVLTree(object):
 
         return rank
 
-
-
-
     """finds the i'th smallest item (according to keys) in the dictionary
 
     @type i: int
@@ -292,19 +374,16 @@ class AVLTree(object):
     @param i: the rank to be selected in self
     @rtype: AVLNode
     @returns: the node of rank i in self
+    @complexity: O(log n)
     """
-
     def select(self, i):
         curr = self.root
 
         while curr.is_real_node():
-
             if curr.left.size + 1 == i:
                 return curr
-
             elif i <= curr.left.size:
                 curr = curr.left
-
             else:
                 i -= (curr.left.size + 1)
                 curr = curr.right
@@ -315,33 +394,77 @@ class AVLTree(object):
     @param a: the lower end of the range
     @type b: int
     @param b: the upper end of the range
-    @pre: a<b
+    @pre: a < b
     @rtype: AVLNode
-    @returns: the node with maximal (lexicographically) value having a<=key<=b, or None if no such keys exist
+    @returns: the node with maximal (lexicographically) value having a <= key <= b, or None if no such keys exist
+    @complexity: O(log n)
     """
-
     def max_range(self, a, b):
-        return None
+        return self.rec_max_in_range(self.root, a, b)
+
+    """
+    Helper function to find the node with the largest value in a specified range of keys.
+
+    @type node: AVLNode
+    @param node: The current node being checked
+    @type a: int
+    @param a: The lower end of the range
+    @type b: int
+    @param b: The upper end of the range
+    @rtype: AVLNode
+    @returns: the node with the maximal value within the range, or NONE_NODE if no such node exists
+    @complexity: O(log n)
+    """
+    def rec_max_in_range(self, node, a, b):
+
+        if not node.is_real_node():
+            return AVLTree.NONE_NODE
+
+        if node.key < a:
+            return self.rec_max_in_range(node.right, a, b)
+        elif node.key > b:
+            return self.rec_max_in_range(node.left, a, b)
+        else:
+            left_max_node = self.rec_max_in_range(node.left, a, b)
+            right_max_node = self.rec_max_in_range(node.right, a, b)
+            return max(node, left_max_node, right_max_node, key=lambda n: n.value)
 
     """returns the root of the tree representing the dictionary
 
     @rtype: AVLNode
     @returns: the root, None if the dictionary is empty
+    @complexity: O(1)
     """
-
     def get_root(self):
         return self.root if self.root.is_real_node() else None
 
 
 def print_space(n, removed):
+    """
+    Helper function to print space for tree visualization.
+
+    @type n: int
+    @param n: Number of tabs to print
+    @type removed: AVLNode or None
+    @param removed: The node to print, or None
+    @complexity: O(n)
+    """
     for i in range(n):
         print("\t", end="")
     if removed is None:
         print(" ", end="")
     else:
-        print("K:"+str(removed.key)+" "+"H:"+str(removed.height)+" "+"S:"+str(removed.size), end="")
+        print("K:" + str(removed.key) + " " + "H:" + str(removed.height) + " " + "S:" + str(removed.size), end="")
+
 
 def print_binary_tree(root):
+    """
+    Helper function to print the binary tree.
+
+    @type root: AVLNode
+    @param root: The root node of the tree
+    @complexity: O(n)
+    """
     tree_level = []
     temp = []
     tree_level.append(root)
@@ -351,8 +474,7 @@ def print_binary_tree(root):
     while counter <= height:
         removed = tree_level.pop(0)
         if len(temp) == 0:
-            print_space(int(number_of_elements /
-                            (2 ** (counter + 1))), removed)
+            print_space(int(number_of_elements / (2 ** (counter + 1))), removed)
         else:
             print_space(int(number_of_elements / (2 ** counter)), removed)
         if removed is None:
@@ -366,19 +488,22 @@ def print_binary_tree(root):
             tree_level = temp
             temp = []
             counter += 1
+
+
 def main():
     myTree = AVLTree()
-    myTree.insert(3, '1')
-    myTree.insert(185, '1')
-    myTree.insert(8, '1')
-    myTree.insert(12, '1')
-    myTree.insert(21, '1')
-    myTree.insert(14, '1')
+    myTree.insert(3, 'a')
+    myTree.insert(185, 'zb')
+    myTree.insert(8, 'c')
+    myTree.insert(12, 'd')
+    myTree.insert(21, 'e')
+    myTree.insert(14, 'f')
+    print(myTree.max_range(0, 200).key)
 
+    # print(myTree.avl_to_array())
+    # print("\n\n\n\n\n")
+    # print_binary_tree(myTree.root)
 
-    print_binary_tree(myTree.root)
-    print("\n\n\n\n\n")
-    print_binary_tree(myTree.root)
 
 if __name__ == "__main__":
     main()
