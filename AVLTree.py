@@ -41,6 +41,8 @@ class AVLTree(object):
     Constructor, you are allowed to add more fields.
     """
     NONE_NODE = AVLNode(None, "")
+    DELETION = 0
+    INSERTION = 1
 
     def __init__(self):
         self.root = AVLTree.NONE_NODE
@@ -79,44 +81,59 @@ class AVLTree(object):
     """
     def insert(self, key, val):
         parent_node = self.regular_insertion(key, val)
-        return self.balance_tree(parent_node)
+        return self.balance_tree(parent_node, AVLTree.INSERTION)
 
     """
     Balances the AVL tree after insertion or deletion.
 
     @type parent_node: AVLNode
     @param parent_node: The parent node to start balancing from
+    @type mode: int
+    @param mode: The balance tree mode, for deleting and insertion the function will work accordingly
     @rtype: int
     @returns: the number of rebalancing operations performed
     @complexity: O(log n)
     """
-    def balance_tree(self, parent_node):
+    def balance_tree(self, parent_node, mode):
 
         rotation_counter = 0
 
         while parent_node.is_real_node():
+            old_parent_height = parent_node.height
             parent_node.height = 1 + max(parent_node.left.height, parent_node.right.height)
             parent_node.size = 1 + parent_node.left.size + parent_node.right.size
             parent_bf = (parent_node.left.height - parent_node.right.height)
 
-            if parent_bf == 2:
-                son_bf = parent_node.left.left.height - parent_node.left.right.height
+            if abs(parent_bf) < 2 and old_parent_height == parent_node.height:
+                break
 
-                if son_bf == -1:
-                    self.left_rotate(parent_node.left)
-                    rotation_counter += 1
-                self.right_rotate(parent_node)
+            elif abs(parent_bf) < 2 and old_parent_height != parent_node.height:
                 rotation_counter += 1
+                parent_node = parent_node.parent
+                continue
 
-            elif parent_bf == -2:
-                son_bf = parent_node.right.left.height - parent_node.right.right.height
-                if son_bf == 1:
-                    self.right_rotate(parent_node.right)
+            elif abs(parent_bf) == 2:
+                if parent_bf == 2:
+                    son_bf = parent_node.left.left.height - parent_node.left.right.height
+
+                    if son_bf == -1:
+                        self.left_rotate(parent_node.left)
+                        rotation_counter += 1
+                    self.right_rotate(parent_node)
                     rotation_counter += 1
-                self.left_rotate(parent_node)
-                rotation_counter += 1
 
-            parent_node = parent_node.parent
+                elif parent_bf == -2:
+                    son_bf = parent_node.right.left.height - parent_node.right.right.height
+                    if son_bf == 1:
+                        self.right_rotate(parent_node.right)
+                        rotation_counter += 1
+                    self.left_rotate(parent_node)
+                    rotation_counter += 1
+
+                if mode == AVLTree.INSERTION:
+                    break
+
+                parent_node = parent_node.parent
 
         return rotation_counter
 
@@ -230,7 +247,7 @@ class AVLTree(object):
     """
     def delete(self, node):
         parent = self.regular_deletion(node)
-        return self.balance_tree(parent)
+        return self.balance_tree(parent, AVLTree.DELETION)
 
     """
     Regular deletion method for deleting a node from the AVL tree.
@@ -491,18 +508,24 @@ def print_binary_tree(root):
 
 
 def main():
-    # myTree = AVLTree()
-    # print(myTree.get_root())
-    # myTree.insert(3, 'a')
-    # myTree.insert(185, 'zb')
-    # myTree.insert(8, 'c')
-    # myTree.insert(12, 'd')
-    # myTree.insert(21, 'e')
-    # myTree.insert(14, 'f')
-    # print(myTree.max_range(0, 200).key)
-    # print(myTree.avl_to_array())
-    # print("\n\n\n\n\n")
-    # print_binary_tree(myTree.root)
+    myTree = AVLTree()
+    # print(myTree.insert(3, 'a'))
+    # print(myTree.insert(185, 'zb'))
+    # print(myTree.insert(8, 'c'))
+    # print(myTree.insert(12, 'd'))
+    # print(myTree.insert(21, 'e'))
+    # print(myTree.insert(14, 'f'))
+    print(myTree.insert(2, 'f'))
+    print(myTree.insert(1, 'f'))
+    print(myTree.insert(3, 'f'))
+    print(myTree.insert(4, 'f'))
+
+
+    print("\n\n\n\n\n")
+    print_binary_tree(myTree.root)
+    print("\n\n\n\n\n")
+    print(myTree.delete(myTree.search(4)))
+    print_binary_tree(myTree.root)
 
 
 if __name__ == "__main__":
