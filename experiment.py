@@ -45,7 +45,7 @@ class AVLTree(object):
     INSERTION = 1
     PATH_LENGTH_COUNTER = 0
     TOTAL_ROTATION_COUNTER = 0
-
+    TOTAL_EXCHANGES_COUNTER = 0
     def __init__(self):
         self.root = AVLTree.NONE_NODE
         self.max_node = AVLTree.NONE_NODE
@@ -224,7 +224,7 @@ class AVLTree(object):
         new_node.right = AVLTree.NONE_NODE
 
         path_len = 0
-        node_rank = 0
+        exchange_counter = 0
 
         #UP PATH
         while sub_tree_root.is_real_node():
@@ -242,7 +242,7 @@ class AVLTree(object):
             path_len += 1
             parent = curr_node
             if key < curr_node.key:
-                node_rank = node_rank + 1 + curr_node.right.size
+                exchange_counter = exchange_counter + 1 + curr_node.right.size
                 curr_node = curr_node.left
             else:
                 curr_node = curr_node.right
@@ -259,8 +259,7 @@ class AVLTree(object):
         if key > self.max_node.key:
             self.max_node = new_node
 
-        print("\nRANK:" + str(node_rank) + "\n")
-
+        AVLTree.TOTAL_EXCHANGES_COUNTER += exchange_counter
         AVLTree.PATH_LENGTH_COUNTER += path_len
         return parent
 
@@ -541,7 +540,7 @@ def main():
     # print(myTree)
     # myTree.insert(4, 'a')
     # print(myTree)
-    print(f"PATH_LENGTH_COUNTER:{AVLTree.PATH_LENGTH_COUNTER}\nTOTAL_ROTATION_COUNTER:{AVLTree.TOTAL_ROTATION_COUNTER}")
+    print(f"PATH_LENGTH_COUNTER:{AVLTree.PATH_LENGTH_COUNTER}\nTOTAL_ROTATION_COUNTER:{AVLTree.TOTAL_ROTATION_COUNTER}\nTOTAL_EXCHANGES_COUNTER:{AVLTree.TOTAL_EXCHANGES_COUNTER}")
 
 
 if __name__ == "__main__":
