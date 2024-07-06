@@ -44,6 +44,7 @@ class AVLTree(object):
     DELETION = 0
     INSERTION = 1
     PATH_LENGTH_COUNTER = 0
+    TOTAL_ROTATION_COUNTER = 0
 
     def __init__(self):
         self.root = AVLTree.NONE_NODE
@@ -136,6 +137,7 @@ class AVLTree(object):
 
                 parent_node = parent_node.parent
 
+        AVLTree.TOTAL_ROTATION_COUNTER += rotation_counter
         return rotation_counter
 
     """
@@ -221,9 +223,13 @@ class AVLTree(object):
         new_node.left = AVLTree.NONE_NODE
         new_node.right = AVLTree.NONE_NODE
 
+        path_len = 0
+        node_rank = 0
+
         #UP PATH
         while sub_tree_root.is_real_node():
             if sub_tree_root.key > key and sub_tree_root.parent.is_real_node():
+                path_len += 1
                 sub_tree_root = sub_tree_root.parent
             else:
                 break
@@ -233,8 +239,10 @@ class AVLTree(object):
 
         #DOWN PATH
         while curr_node.is_real_node():
+            path_len += 1
             parent = curr_node
             if key < curr_node.key:
+                node_rank = node_rank + 1 + curr_node.right.size
                 curr_node = curr_node.left
             else:
                 curr_node = curr_node.right
@@ -251,6 +259,9 @@ class AVLTree(object):
         if key > self.max_node.key:
             self.max_node = new_node
 
+        print("\nRANK:" + str(node_rank) + "\n")
+
+        AVLTree.PATH_LENGTH_COUNTER += path_len
         return parent
 
 
@@ -516,17 +527,21 @@ class AVLTree(object):
 
 def main():
     myTree = AVLTree()
-    myTree.insert(3, 'a')
-    myTree.insert(4, 'a')
-    myTree.insert(2, 'a')
-    myTree.insert(10, 'a')
-    myTree.insert(1, 'a')
-    myTree.insert(21, 'a')
-    myTree.insert(-5, 'a')
+    for i in range(10, 0, -1):
+        myTree.insert(i, 'a')
+        print(myTree)
 
-    # print_binary_tree(myTree.root)
-    # print(myTree.root.key)
-    print(myTree)
+    # myTree.insert(5, 'a')
+    # print(myTree)
+    # myTree.insert(10, 'a')
+    # print(myTree)
+    # myTree.insert(2, 'a')
+    # print(myTree)
+    # myTree.insert(1, 'a')
+    # print(myTree)
+    # myTree.insert(4, 'a')
+    # print(myTree)
+    print(f"PATH_LENGTH_COUNTER:{AVLTree.PATH_LENGTH_COUNTER}\nTOTAL_ROTATION_COUNTER:{AVLTree.TOTAL_ROTATION_COUNTER}")
 
 
 if __name__ == "__main__":
