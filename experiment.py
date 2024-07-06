@@ -69,28 +69,6 @@ class AVLTree(object):
     #
     #     return None
 
-    """Find insertion place
-
-    """
-    # def hepler(self, key):
-    #
-    #     node = self.max_node
-    #     counter_up = 0
-    #
-    #     if not node.is_real_node():
-    #         return self.root
-    #
-    #     if node.is_real_node() and key > node.key:
-    #         counter_up += 1
-    #     else:
-    #         while node.is_real_node() and node.key > key:
-    #             counter_up += 1
-    #             node = node.parent
-    #
-    #     return node if node.is_real_node() else self.root
-
-
-
     """inserts a new node into the dictionary with corresponding key and value
 
     @type key: int
@@ -508,9 +486,9 @@ class AVLTree(object):
 
             lwid = len(left[-1])
             rwid = len(right[-1])
-            rootwid = len(root_key) + len(str(root.size)) + 5
+            rootwid = len(root_key) + len(str(root.size)) + len(str(root.height)) + 18
 
-            result = [(lwid + 1) * " " + "K:" + root_key + " S:"+ str(root.size) + (rwid + 1) * " "]
+            result = [(lwid + 1) * " " + "Key:" + root_key + " Size:"+ str(root.size) + " Height:"+ str(root.height)+ (rwid + 1) * " "]
 
             ls = len(left[0].rstrip())
             rs = len(right[0]) - len(right[0].lstrip())
@@ -549,8 +527,7 @@ def main():
     # print_binary_tree(myTree.root)
     # print(myTree.root.key)
     print(myTree)
-    print(myTree.max_node.key)
-    print(myTree.root.key)
+
 
 if __name__ == "__main__":
     main()
