@@ -430,7 +430,7 @@ class AVLTree(object):
     @param b: The upper end of the range
     @rtype: AVLNode
     @returns: the node with the maximal value within the range, or NONE_NODE if no such node exists
-    @complexity: O(log n)
+    @complexity: O(n)
     """
     def rec_max_in_range(self, node, a, b):
 
